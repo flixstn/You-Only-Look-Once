@@ -1,0 +1,11 @@
+[package]
+name = "yolo"
+version = "0.1.0"
+authors = ["flix"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+opencv = {version = "0.47", features = ["clang-runtime", "contrib"]}
+clap = "2.33.3"
