@@ -72,7 +72,14 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
         }
 
         // create a 4D blob from image
-        dnn::blob_from_image_to(&img, &mut blob, 1./255., core::Size::new(inp_width, inp_height), core::Scalar::new(0.,0.,0., 0.), false, false, core::CV_32F)?;
+        dnn::blob_from_image_to(&img, 
+                                      &mut blob, 
+                           1./255., 
+                                 core::Size::new(inp_width, inp_height), 
+                                 core::Scalar::new(0.,0.,0., 0.), 
+                               false, 
+                                 false, 
+                               core::CV_32F)?;
 
         // get the names of output layer for bbox naming
         let names = get_output_names(&net)?;
@@ -95,7 +102,12 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
                 let mut class_id_point = core::Point::default();
                 let mut confidence = 0_f64;
 
-                core::min_max_loc(&scores, &mut 0., &mut confidence, &mut core::Point::new(0,0), &mut class_id_point, &core::no_array()?)?;
+                core::min_max_loc(&scores, 
+                               &mut 0., 
+                               &mut confidence, 
+                               &mut core::Point::new(0,0), 
+                               &mut class_id_point, 
+                                 &core::no_array()?)?;
                 if confidence > conf_threshold as f64 {
                     let center_x = (data[0] *  img_width as f32) as i32;
                     let center_y = (data[1] * img_height as f32) as i32;
@@ -122,7 +134,14 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
             
             // draw predicted bounding box with associated class
             imgproc::rectangle(&mut img, bbox, core::Scalar::new(255., 18., 50., 0.0), 2, imgproc::LINE_8, 0)?;
-            imgproc::put_text(&mut img, &label, core::Point::new(bbox.x, bbox.y), imgproc::FONT_HERSHEY_SIMPLEX, 0.75, core::Scalar::new(0., 0., 0., 0.), 1, imgproc::LINE_8, false)?;
+            imgproc::put_text(&mut img, &label, 
+                          core::Point::new(bbox.x, bbox.y), 
+                     imgproc::FONT_HERSHEY_SIMPLEX, 
+                    0.75, 
+                        core::Scalar::new(0., 0., 0., 0.), 
+                     1, 
+                     imgproc::LINE_8, 
+              false)?;
         }
 
         // show frame 
