@@ -49,8 +49,8 @@ fn try_main() -> Result<(), Box<dyn Error>> {
 
 fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &types::VectorOfString) -> Result<(), Box<dyn Error>> {
     // preallocate images
-    let mut img = prelude::Mat::default()?;
-    let mut blob = prelude::Mat::default()?;
+    let mut img = prelude::Mat::default();
+    let mut blob = prelude::Mat::default();
 
     // define parameters for the network
     let conf_threshold= 0.5_f32;
