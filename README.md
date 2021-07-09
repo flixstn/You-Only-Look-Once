@@ -1,5 +1,5 @@
-# YoloV3
-A Rust implementation of [YoloV3](https://arxiv.org/abs/1506.02640) for object detection and tracking.
+# You Only Look Once: Unified, Real-Time Object Detection
+A Rust implementation of [Yolo](https://arxiv.org/abs/1506.02640) for object detection and tracking.
 
 #### Run
 * Install [OpenCV](https://opencv.org/)
