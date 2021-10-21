@@ -1,5 +1,5 @@
 # You Only Look Once: Unified, Real-Time Object Detection
-A Rust implementation of [Yolo](https://arxiv.org/abs/1506.02640) for object detection and tracking.
+A Rust implementation of [You Only Look Once: Unified, Real-Time Object Detection](https://arxiv.org/abs/1506.02640) for object detection and tracking.
 
 #### Run
 * Install [OpenCV](https://opencv.org/)
