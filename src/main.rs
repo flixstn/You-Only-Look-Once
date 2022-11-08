@@ -8,12 +8,26 @@ use opencv::{
     dnn, 
     highgui, 
     imgproc, 
-    prelude::{self, MatTrait, MatTraitManual, NetTrait}, 
+    prelude::{self, *},
     types, 
     videoio::{self, VideoCaptureTrait}
 };
 
-mod args;
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+pub struct Args {
+    #[arg(short, long)]
+    pub file: String,
+    #[arg(short, long)]
+    pub weights: String,
+    #[arg(short, long)]
+    pub config: String,
+    #[arg(long)]
+    pub coco: String,
+}
+
 
 fn main() {
     // Do not return Result from main, it prints the Debug
@@ -28,7 +42,7 @@ fn main() {
 
 fn try_main() -> Result<(), Box<dyn Error>> {
     // argument parsing
-    let args = args::Args::parse()?;
+    let args = Args::parse();
 
     // initialize video capture 
     let mut video_capture = videoio::VideoCapture::from_file(&args.file, videoio::CAP_ANY)?;
@@ -103,11 +117,11 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
                 let mut confidence = 0_f64;
 
                 core::min_max_loc(&scores, 
-                               &mut 0., 
-                               &mut confidence, 
-                               &mut core::Point::new(0,0), 
-                               &mut class_id_point, 
-                               &core::no_array()?)?;
+                               Some(&mut 0.), 
+                               Some(&mut confidence), 
+                               Some(&mut core::Point::new(0,0)), 
+                               Some(&mut class_id_point),
+                               &core::no_array())?;
                 if confidence > conf_threshold as f64 {
                     let center_x = (data[0] *  img_width as f32) as i32;
                     let center_y = (data[1] * img_height as f32) as i32;
