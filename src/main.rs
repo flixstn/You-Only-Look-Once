@@ -1,7 +1,6 @@
 use std::{
     error::Error, 
-    fs::File, 
-    io::{BufRead, BufReader}
+    fs::{self},
 };
 use opencv::{
     core, 
@@ -86,14 +85,16 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
         }
 
         // create a 4D blob from image
-        dnn::blob_from_image_to(&img, 
-                                &mut blob, 
-                                1./255., 
-                                core::Size::new(inp_width, inp_height), 
-                                core::Scalar::new(0.,0.,0., 0.), 
-                                false, 
-                                false, 
-                                core::CV_32F)?;
+        dnn::blob_from_image_to(
+            &img, 
+            &mut blob, 
+            1./255., 
+            core::Size::new(inp_width, inp_height), 
+            core::Scalar::new(0.,0.,0., 0.), 
+            false, 
+            false, 
+            core::CV_32F
+        )?;
 
         // get the names of output layer for bbox naming
         let names = get_output_names(&net)?;
@@ -116,12 +117,15 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
                 let mut class_id_point = core::Point::default();
                 let mut confidence = 0_f64;
 
-                core::min_max_loc(&scores, 
-                               Some(&mut 0.), 
-                               Some(&mut confidence), 
-                               Some(&mut core::Point::new(0,0)), 
-                               Some(&mut class_id_point),
-                               &core::no_array())?;
+                core::min_max_loc(
+                    &scores, 
+                    Some(&mut 0.), 
+                    Some(&mut confidence), 
+                    Some(&mut core::Point::new(0,0)), 
+                    Some(&mut class_id_point),
+                    &core::no_array()
+                )?;
+
                 if confidence > conf_threshold as f64 {
                     let center_x = (data[0] *  img_width as f32) as i32;
                     let center_y = (data[1] * img_height as f32) as i32;
@@ -148,15 +152,17 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
             
             // draw predicted bounding box with associated class
             imgproc::rectangle(&mut img, bbox, core::Scalar::new(255., 18., 50., 0.0), 2, imgproc::LINE_8, 0)?;
-            imgproc::put_text(&mut img, 
-                              &label, 
-                              core::Point::new(bbox.x, bbox.y), 
-                              imgproc::FONT_HERSHEY_SIMPLEX, 
-                              0.75, 
-                              core::Scalar::new(0., 0., 0., 0.), 
-                              1, 
-                              imgproc::LINE_8, 
-                              false)?;
+            imgproc::put_text(
+                &mut img, 
+                &label, 
+                core::Point::new(bbox.x, bbox.y), 
+                imgproc::FONT_HERSHEY_SIMPLEX, 
+                0.75, 
+                core::Scalar::new(0., 0., 0., 0.), 
+                1, 
+                imgproc::LINE_8, 
+                false
+            )?;
         }
 
         // show frame 
@@ -169,25 +175,37 @@ fn run(video_capture: &mut videoio::VideoCapture, net: &mut dnn::Net, classes: &
 fn get_output_names(net: &dnn::Net) -> Result<types::VectorOfString, Box<dyn Error>> {
     let layers = net.get_unconnected_out_layers()?;
     let layer_names = net.get_layer_names()?;
+
+    Ok(
+        layers.iter().enumerate().fold(types::VectorOfString::new(), |mut names, (i, _)| {
+            names.insert(i, &layer_names.get(
+                (layers.get(i).unwrap() - 1) as usize).expect("No such value.")
+            ).expect("Failed inserting value.");
+            names
+        })
+    )
     
-    let mut names = types::VectorOfString::with_capacity(layers.len());
+    // let mut names = types::VectorOfString::with_capacity(layers.len());
 
-    for (i, _num) in layers.iter().enumerate() {
-        let value = layer_names.get((layers.get(i).unwrap() - 1) as usize)?;
-        names.insert(i, &value)?;
-    }
+    // for (i, _num) in layers.iter().enumerate() {
+    //     let value = layer_names.get((layers.get(i).unwrap() - 1) as usize)?;
+    //     names.insert(i, &value)?;
+    // }
 
-    Ok(names)
+    // Ok(names)
 }
 
 fn read_file(file_name: &str) -> Result<types::VectorOfString, Box<dyn Error>> {
-    let file = File::open(file_name)?;
-    let reader = BufReader::new(file);
-    let mut vec = types::VectorOfString::new();
+    Ok(
+        fs::read_to_string(file_name)?.split_whitespace().map(|name| name.into()).collect()
+    )
+    // let file = File::open(file_name)?;
+    // let reader = BufReader::new(file);
+    // let mut vec = types::VectorOfString::new();
 
-    for line in reader.lines() {
-        vec.push(line.unwrap().as_str());
-    }
+    // for line in reader.lines() {
+    //     vec.push(line.unwrap().as_str());
+    // }
 
-    Ok(vec)
+    // Ok(vec)
 }
