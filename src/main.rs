@@ -184,28 +184,10 @@ fn get_output_names(net: &dnn::Net) -> Result<types::VectorOfString, Box<dyn Err
             names
         })
     )
-    
-    // let mut names = types::VectorOfString::with_capacity(layers.len());
-
-    // for (i, _num) in layers.iter().enumerate() {
-    //     let value = layer_names.get((layers.get(i).unwrap() - 1) as usize)?;
-    //     names.insert(i, &value)?;
-    // }
-
-    // Ok(names)
 }
 
 fn read_file(file_name: &str) -> Result<types::VectorOfString, Box<dyn Error>> {
     Ok(
         fs::read_to_string(file_name)?.split_whitespace().map(|name| name.into()).collect()
     )
-    // let file = File::open(file_name)?;
-    // let reader = BufReader::new(file);
-    // let mut vec = types::VectorOfString::new();
-
-    // for line in reader.lines() {
-    //     vec.push(line.unwrap().as_str());
-    // }
-
-    // Ok(vec)
 }
